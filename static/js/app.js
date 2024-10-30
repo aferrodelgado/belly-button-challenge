@@ -12,13 +12,14 @@ function buildMetadata(sample) {
     // Use d3 to select the panel with id of `#sample-metadata`
     let panel = d3.select("#sample-metadata");
 
-    // Use `.html("") to clear any existing metadata
+    // Use .html("") to clear any existing metadata
     panel.html("");
 
     // Inside a loop, you will need to use d3 to append new
     // tags for each key-value in the filtered metadata.
     Object.entries(result).forEach(([key, value]) => {
       panel.append("h6").text(`${key.toUpperCase()}: ${value}`);
+    });
   });
 }
 
@@ -30,12 +31,12 @@ function buildCharts(sample) {
     let samples = data.samples;
 
     // Filter the samples for the object with the desired sample number
-    let sampleDAtaArray = samples.filter(sampleObj => sampleObj.id == sample);
+    let sampleDataArray = samples.filter(sampleObj => sampleObj.id == sample);
     let sampleData = sampleDataArray[0];
 
     // Get the otu_ids, otu_labels, and sample_values
     let otu_ids = sampleData.otu_ids;
-    let otu_lables = sampleData.otu_lables;
+    let otu_labels = sampleData.otu_labels;
     let sample_values = sampleData.sample_values;
 
     // Build a Bubble Chart
@@ -71,8 +72,8 @@ function buildCharts(sample) {
     let barData = [{
       x: sample_values.slice(0, 10).reverse(),
       y: yticks, 
-      text: otu_lables.slice(0, 10).reverse(),
-      type: "bar"
+      text: otu_labels.slice(0, 10).reverse(),
+      type: "bar",
       orientation: "h"
     }];
 
@@ -91,28 +92,33 @@ function init() {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
     // Get the names field
-
+    let sampleNames = data.names;
 
     // Use d3 to select the dropdown with id of `#selDataset`
-
+    let dropdown = d3.select("#selDataset");
 
     // Use the list of sample names to populate the select options
     // Hint: Inside a loop, you will need to use d3 to append a new
     // option for each sample name.
+    sampleNames.forEach((name) => {
+      dropdown.append("option").text(name).property("value", name);
+    });
 
 
     // Get the first sample from the list
-
+    let firstSample = sampleNames[0];
 
     // Build charts and metadata panel with the first sample
-
+    buildCharts(firstSample);
+    buildMetadata(firstSample);
   });
 }
 
 // Function for event listener
 function optionChanged(newSample) {
   // Build charts and metadata panel each time a new sample is selected
-
+  buildCharts(newSample);
+  buildMetadata(newSample);
 }
 
 // Initialize the dashboard
